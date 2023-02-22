@@ -44,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            //creates button with gradient
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Stack(
@@ -70,9 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () async {
                       user = await _getUser();
                       if (!mounted) return;
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              UserProfile(users: user?.data['results'])));
+                      Navigator.of(context)
+                          .push(_createRoute(user?.data['results']));
                     },
                     child: const Text('Get User'),
                   ),
@@ -114,4 +114,24 @@ MaterialColor createMaterialColor(Color color) {
     );
   }
   return MaterialColor(color.value, swatch);
+}
+
+//creates paghe transistion animation
+Route _createRoute(users) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        UserProfile(users: users),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0, 1.0);
+      const end = Offset.zero;
+      const curve = Curves.easeIn;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }
