@@ -65,39 +65,54 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            //to show loading screen while inference is ran
-            setState(() {
-              _loading = true;
-            });
-            // Take the Picture in a try / catch block. If anything goes wrong,
-            // catch the error.
-            try {
-              // Ensure that the camera is initialized.
-              await _initializeControllerFuture;
-              // Attempt to take a picture and get the file `image`
-              // where it was saved.
-              XFile image = await _controller.takePicture();
+            onPressed: () async {
+              //to show loading screen while inference is ran
               setState(() {
-                _loading = false;
+                _loading = true;
               });
-              if (!mounted) return;
-              // If the picture was taken, display it on a new screen.
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PictureScreen(
-                    imagePath: image.path,
-                    height: 514,
-                    width: 392,
+              // Take the Picture in a try / catch block. If anything goes wrong,
+              // catch the error.
+              try {
+                // Ensure that the camera is initialized.
+                await _initializeControllerFuture;
+                // Attempt to take a picture and get the file `image`
+                // where it was saved.
+                XFile image = await _controller.takePicture();
+                setState(() {
+                  _loading = false;
+                });
+                if (!mounted) return;
+                // If the picture was taken, display it on a new screen.
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PictureScreen(
+                      imagePath: image.path,
+                      height: 514,
+                      width: 392,
+                    ),
                   ),
+                );
+              } catch (e) {
+                debugPrint(e.toString());
+              }
+            },
+            child: Container(
+              constraints: const BoxConstraints.expand(),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                color: const Color.fromARGB(255, 13, 174, 174),
+                border: Border.all(
+                  width: 4,
+                  color: const Color.fromARGB(255, 50, 196, 210),
                 ),
-              );
-            } catch (e) {
-              debugPrint(e.toString());
-            }
-          },
-          child: const Icon(Icons.camera_alt),
-        ),
+              ),
+              child: const Icon(
+                Icons.camera_alt,
+                size: 30,
+              ),
+            )
+            // child: const Icon(Icons.camera_alt),
+            ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       );
     }
